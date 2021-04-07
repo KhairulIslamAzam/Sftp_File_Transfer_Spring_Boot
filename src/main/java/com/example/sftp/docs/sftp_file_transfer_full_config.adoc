@@ -40,7 +40,7 @@ TIP: User can use password or ssh key to communicate with a server. To first tim
 WARNING: when one use ssk key. The key (public and private key must be in .ssh directory).Public key paste it into the server authorize_key file in the .ssh directory. And also when client try to first time connect to server with ssh key then he need to set passPharse for private key.
 
 .All the method and it's demo format of access url in postman api. In postman api first select body and then enter the key and value
-[cols="2,3"]
+[cols="1,2"]
 |===
 |Method |Url Description
 
