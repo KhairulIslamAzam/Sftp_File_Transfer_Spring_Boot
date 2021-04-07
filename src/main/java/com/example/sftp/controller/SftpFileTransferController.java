@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author Khairul Islam Azam
  * @created 04/04/2021 - 9:27 PM
- * @project IntelliJ IDEA
+ * @project SFTP File Transfer in Spring boot
  */
 @RestController
 public class SftpFileTransferController {

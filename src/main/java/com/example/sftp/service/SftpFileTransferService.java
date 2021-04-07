@@ -12,13 +12,13 @@ import java.util.Vector;
 /**
  * @author Khairul Islam Azam
  * @created 2/04/2021 - 4:40 PM
- * @project IntelliJ IDEA
+ * @project SFTP File Transfer in Spring boot
  */
 
 @Service
 public class SftpFileTransferService {
 
-    private Logger logger = LoggerFactory.getLogger(SftpFileTransferService.class);
+    private final Logger logger = LoggerFactory.getLogger(SftpFileTransferService.class);
     /**
      * here class variable are initialize from application.properties
      */
@@ -46,10 +46,10 @@ public class SftpFileTransferService {
     /**
      * this method is used for file upload in client to server
      *
-     * @param files           here localFilePath is used for client
-     *                       who upload file from his pc or any other device
+     * @param files here files is the arrays of multipart files which taking from
+     *  the rest api from any local host.
      * @param remoteFilePath remote path is the directory of
-     *                       your server where you can store your file
+     * your server where you can store your file
      * @return after storing your file this method
      * return boolean value to ensure that your file is saved or not
      */
@@ -84,7 +84,7 @@ public class SftpFileTransferService {
      *
      * @param localFilePath  same as upload directory localFilepath
      * @param remoteFilePath same as upload directory remoteFilePath
-     * @return
+     * @return if it fetch data successfully then it sends true otherwise send false
      */
     public boolean downloadFile(String fileName, String localFilePath, String remoteFilePath) {
         ChannelSftp channelSftp = createChannelSftp();
@@ -113,7 +113,7 @@ public class SftpFileTransferService {
      * Vector can grow or shrink as needed to accommodate adding and removing items after the Vector has been created
      * channelSftp.ls(remoteFilePath) = lists the contents of a remote directory
      * ChannelSftp.LsEntry is an Objects implementing this interface can be passed as an argument for ChannelSftp's ChannelSftp.ls(java.lang.String) method.
-     * @return
+     * @return if it fetch all data successfully then it sends true otherwise send false
      */
     public boolean downloadListOfFile(String localFilePath, String remoteFilePath) {
         ChannelSftp channelSftp = createChannelSftp();
@@ -141,9 +141,9 @@ public class SftpFileTransferService {
     /**
      * this method is used for deleting file in server directory
      *
-     * @param fileName       fileName for delete
+     * @param fileName fileName for delete
      * @param remoteFilePath server directory where the fileName stored
-     * @return
+     * @return if it deleted successfully then it sends true otherwise send false
      */
     public boolean deleteFile(String fileName, String remoteFilePath) {
         ChannelSftp channelSftp = createChannelSftp();
@@ -172,11 +172,11 @@ public class SftpFileTransferService {
     /**
      * this method is used for creating sftpchannel so that user can upload or download or deleting file
      * first we need jsch class after that creating session from jsch object giving the username, host, port
-     * after that a Channel connected to an sftp server (as a subsystem of the ssh server).
-     *
-     * @return after connecting the channel it shloud return the connect sftpchannel
+     * after that a Channel connected to an sftp server (which information provided in the application properties).
+     * @return after connecting the channel it should return the connect sftpchannel
      */
     private ChannelSftp createChannelSftp() {
+        ChannelSftp channelSftp = null;
         try {
             JSch jSch = new JSch();
             jSch.addIdentity(privatekey, passphrase.getBytes());
@@ -185,16 +185,15 @@ public class SftpFileTransferService {
             session.connect(sessionTimeout);
             Channel channel = session.openChannel("sftp");
             channel.connect(channelTimeout);
-            return (ChannelSftp) channel;
+            channelSftp =  (ChannelSftp) channel;
         } catch (JSchException ex) {
             logger.error("Create ChannelSftp error", ex.getMessage());
         }
-        return null;
+        return channelSftp;
     }
 
     /**
      * this method is used for disconnecting channel as well as session
-     *
      * @param channelSftp channelSftp is the channel which connect successfully in connect() method
      */
     private void disconnectChannelSftp(ChannelSftp channelSftp) {
@@ -213,7 +212,12 @@ public class SftpFileTransferService {
         }
     }
 
-
+    /**
+     *
+     * @param file it takes multipart file
+     * @return convert file from multipart file
+     * @throws IOException if there any error in reading then it throws exception
+     */
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
         File convFile = new File(file.getOriginalFilename());
         FileOutputStream fos = new FileOutputStream(convFile);
@@ -224,8 +228,10 @@ public class SftpFileTransferService {
 
     /**
      * this method is used for checking server directory.
+     * if there is no directory in this server then in catch block we make a directory in server
+     * using mkdir()
      * @param path url of the server folder
-     * @return
+     * @return it send true if the method got directory other it send false and create directory
      */
     private boolean remoteDirectoryCk(String path) {
         SftpATTRS attrs = null;
@@ -250,3 +256,4 @@ public class SftpFileTransferService {
         return false;
     }
 }
+
