@@ -25,20 +25,22 @@ public class SftpFileTransferController {
     private SftpFileTransferService sftpFileTransferService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files,
+    public boolean uploadFiles(@RequestParam("files") MultipartFile[] files,
                                                        @RequestParam("remotePath") String remotePath) {
 
-        String message = "";
 
-        List<String> fileDetails = new ArrayList<>();
-
-        Arrays.asList(files).stream().forEach(file -> {
-            sftpFileTransferService.uploadFile(file, remotePath);
-            fileDetails.add(file.getOriginalFilename());
-        });
-
-        message = MessageConstants.FILE_UPLOADED + fileDetails;
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+        return sftpFileTransferService.uploadFile(files, remotePath);
+//        String message = "";
+//
+//        List<String> fileDetails = new ArrayList<>();
+//
+//        Arrays.asList(files).stream().forEach(file -> {
+//            sftpFileTransferService.uploadFile(file, remotePath);
+//            fileDetails.add(file.getOriginalFilename());
+//        });
+//
+//        message = MessageConstants.FILE_UPLOADED + fileDetails;
+//        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
     }
 
     @GetMapping("/download")

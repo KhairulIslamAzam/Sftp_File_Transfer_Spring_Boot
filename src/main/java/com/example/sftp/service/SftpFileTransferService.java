@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -47,25 +49,28 @@ public class SftpFileTransferService {
     /**
      * this method is used for file upload in client to server
      *
-     * @param file           here localFilePath is used for client
+     * @param files           here localFilePath is used for client
      *                       who upload file from his pc or any other device
      * @param remoteFilePath remote path is the directory of
      *                       your server where you can store your file
      * @return after storing your file this method
      * return boolean value to ensure that your file is saved or not
      */
-    public boolean uploadFile(MultipartFile file, String remoteFilePath) {
+    public boolean uploadFile(MultipartFile[] files, String remoteFilePath) {
+
         ChannelSftp channelSftp = createChannelSftp();
 
         if (remoteDirectoryCk(remoteFilePath)) {
             try {
-                File convFile = convertMultiPartToFile(file);
-                if (convFile.canRead()) {
-                    channelSftp.put(new FileInputStream(convFile),
-                            remoteFilePath + "/" + convFile.getName());
-                    return true;
-                }
+                for(MultipartFile file : files) {
 
+                    File convFile = convertMultiPartToFile(file);
+                    if (convFile.canRead()) {
+                        channelSftp.put(new FileInputStream(convFile),
+                                remoteFilePath + "/" + convFile.getName());
+                    }
+                }
+                return true;
             } catch (SftpException | FileNotFoundException ex) {
                 logger.error("Error upload file", ex.getMessage());
             } catch (IOException e) {
@@ -134,8 +139,6 @@ public class SftpFileTransferService {
         }
 
         return false;
-
-
     }
 
     /**
@@ -189,7 +192,6 @@ public class SftpFileTransferService {
         } catch (JSchException ex) {
             logger.error("Create ChannelSftp error", ex.getMessage());
         }
-
         return null;
     }
 
