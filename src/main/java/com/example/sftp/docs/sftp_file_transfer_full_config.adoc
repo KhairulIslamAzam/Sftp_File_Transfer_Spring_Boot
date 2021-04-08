@@ -288,7 +288,7 @@ There are lots of library are present for sftp operation, such as: +
 `Apache Commons VFS` +
 etc.
 
-TIP: From the above library. I choose Jsch, because of configuration, communication, other features which i provided in the feature section. And many other things which you can found in the jsch website.
+TIP: From the above library. I choose Jsch, because of popularity, easier configuration, communication, other features which i provided in the feature section. And many other things which you can found in the jsch website.
 ****
 
 == Additional Resources
